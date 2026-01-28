@@ -13,7 +13,7 @@ A Progressive Web App (PWA) for EY employees to track customer meetings and driv
 
 ### Security & Access Control
 - ✅ **Email Authentication**: Magic link sign-in via Resend
-- ✅ **@ey.com Domain Restriction**: Only EY email addresses can access
+- ✅ **Domain Restriction**: Only @ey.com and @dk.ey.com email addresses can access
 - ✅ **Role-Based Access Control**:
   - **EMPLOYEE**: Create/edit own meetings, view own stats
   - **MANAGER**: View all reports, access analytics

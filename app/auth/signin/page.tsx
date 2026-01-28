@@ -11,8 +11,11 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!email.endsWith('@ey.com')) {
-      setError('Only @ey.com email addresses are allowed');
+    const allowedDomains = ['@ey.com', '@dk.ey.com'];
+    const isAllowed = allowedDomains.some(domain => email.endsWith(domain));
+    
+    if (!isAllowed) {
+      setError('Only @ey.com and @dk.ey.com email addresses are allowed');
       return;
     }
 
@@ -36,7 +39,7 @@ export default function SignInPage() {
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold">EY Meeting Tracker</h1>
-          <p className="mt-2 text-gray-600">Sign in with your EY email</p>
+          <p className="mt-2 text-gray-600">Sign in with your EY email (@ey.com or @dk.ey.com)</p>
         </div>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">

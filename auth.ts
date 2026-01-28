@@ -12,7 +12,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async signIn({ user }) {
-      if (!user.email?.endsWith('@ey.com')) {
+      const allowedDomains = ['@ey.com', '@dk.ey.com'];
+      const isAllowed = allowedDomains.some(domain => user.email?.endsWith(domain));
+      if (!isAllowed) {
         return false;
       }
       return true;

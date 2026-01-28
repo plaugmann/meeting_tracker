@@ -1,0 +1,5 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" fill="#2e2e38"/>
+  <text x="256" y="305" font-family="Arial, sans-serif" font-size="220" font-weight="bold" fill="#ffffff" text-anchor="middle">EY</text>
+  <text x="256" y="385" font-family="Arial, sans-serif" font-size="50" fill="#ffffff" text-anchor="middle" opacity="0.8">Meetings</text>
+</svg>

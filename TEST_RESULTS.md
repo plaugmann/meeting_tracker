@@ -1,228 +1,109 @@
-# Test Results - EY Meeting Tracker
+# Email Testing Results
 
-**Date:** 2026-01-28  
-**Status:** ✅ All Tests Passed
+## ✅ Direct Email Test - SUCCESS
 
-## 1. Project Setup Tests
+**Date:** 2026-01-29
+**Test:** Direct Resend API call
 
-### ✅ Next.js Configuration
-- **Status:** PASSED
-- **Details:** 
-  - Next.js 16.1.6 installed and configured
-  - App Router enabled
-  - TypeScript compilation successful with no errors
-  - Turbopack build system working
+**Configuration:**
+- API Key: `re_Pevt4ur1_2kqh97HPZ6WN81rAd62Sk4jj`
+- From: `EY Meeting Tracker <onboarding@resend.dev>`
+- To: `soerenplaugmann@gmail.com`
 
-### ✅ Tailwind CSS
-- **Status:** PASSED
-- **Details:**
-  - Tailwind CSS v4 installed with @tailwindcss/postcss
-  - PostCSS configuration correct
-  - Build completes without CSS errors
+**Result:** ✅ **SUCCESS**
+- Email ID: `36aa3c1b-f7e7-4524-a857-bfc3c1b37f28`
+- Status: Delivered
+- Test script: `scripts/test-email-direct.ts`
 
-## 2. Database Tests
+**Conclusion:** Resend API is configured correctly and working.
 
-### ✅ Prisma Setup
-- **Status:** PASSED
-- **Details:**
-  - Prisma 6.19.2 installed
-  - SQLite database created at `prisma/dev.db`
-  - Schema includes: User, Account, VerificationToken, Customer, Meeting, MeetingCustomer
-  - Migrations applied successfully (2 migrations)
+---
 
-### ✅ Database Connectivity
-- **Status:** PASSED
-- **Test Output:**
-  ```
-  ✓ Users in database: 1
-  ✓ User details:
-    - admin@ey.com (ADMIN) - Target: 10/month
-  
-  ✓ Customers in database: 10
-  ✓ Sample customers:
-    - Microsoft, Google, Amazon, Apple, Meta
-  
-  ✓ Meetings in database: 0
-  ```
+## 🔧 Sign-In Flow Improvements
 
-### ✅ Seed Data
-- **Status:** PASSED
-- **Details:**
-  - Admin user created: admin@ey.com
-  - Admin role: ADMIN
-  - Admin target: 10 meetings/month
-  - 10 customers seeded (Microsoft, Google, Amazon, Apple, Meta, IBM, Oracle, SAP, Salesforce, Adobe)
+**Changes Made:**
 
-## 3. Authentication Tests
+1. **Sign-In Page (`app/auth/signin/page.tsx`):**
+   - Added console logging to track email submission
+   - Added error handling for failed sign-in attempts
+   - Redirects to verification page with email parameter
+   - Shows email being sent in console
 
-### ✅ NextAuth v5 Configuration
-- **Status:** PASSED
-- **Details:**
-  - NextAuth v5.0.0-beta.30 installed
-  - Prisma adapter configured
-  - Email provider (Resend) configured
-  - API route created at `/api/auth/[...nextauth]`
+2. **Verification Page (`app/auth/verify/page.tsx`):**
+   - Now displays the email address that was sent to
+   - Added helpful messaging about checking spam
+   - Added "Back to sign in" link
+   - More user-friendly UI
 
-### ✅ Authentication Pages
-- **Status:** PASSED
-- **Pages Created:**
-  - `/auth/signin` - Email input form with @ey.com validation
-  - `/auth/verify` - Email verification confirmation page
+3. **Auth Configuration (`auth.ts`):**
+   - Explicitly set `apiKey` parameter for Resend provider
+   - Using `onboarding@resend.dev` as default sender
 
-### ✅ Middleware & Route Protection
-- **Status:** PASSED
-- **Details:**
-  - Middleware configured to protect all routes except auth pages
-  - Public routes: `/api/auth/*`, `/auth/signin`, `/auth/verify`
-  - All other routes require authentication
+---
 
-### ✅ Domain Restriction
-- **Status:** PASSED
-- **Details:**
-  - Client-side validation: Only @ey.com emails accepted in sign-in form
-  - Server-side validation: NextAuth signIn callback blocks non-@ey.com domains
-  - Double layer of protection implemented
+## 🧪 Testing Instructions
 
-### ✅ Role-Based Access Control (RBAC)
-- **Status:** PASSED
-- **Roles Defined:**
-  - EMPLOYEE (default)
-  - MANAGER
-  - ADMIN
-- **Session Enhancement:**
-  - User ID injected into session
-  - User role available in session
-  - User target available in session
+### Test Sign-In Flow:
 
-## 4. Application Pages Tests
+1. **Open:** http://localhost:3000
+2. **Enter email:** `your.name@dk.ey.com` or `your.name@ey.com`
+3. **Click:** "Send magic link"
+4. **Check browser console** (F12) to see:
+   - "Sending magic link to: your.name@dk.ey.com"
+   - Sign-in result from NextAuth
+5. **Verify redirect** to `/auth/verify?email=...`
+6. **Check email inbox** (including spam folder)
 
-### ✅ Home Dashboard
-- **Status:** PASSED
-- **Features:**
-  - Authentication check (redirects to /auth/signin if not logged in)
-  - Navigation bar with user email, role badge, and sign-out button
-  - Three stat cards: This Week, This Month, Progress
-  - "New Meeting" CTA button
-  - Recent meetings section (placeholder)
-  - Server-side rendered
+### Console Debugging:
 
-### ✅ Build & Compilation
-- **Status:** PASSED
-- **Build Output:**
-  ```
-  Route (app)
-  ┌ ƒ /                      (Dynamic, requires auth)
-  ├ ○ /_not-found
-  ├ ƒ /api/auth/[...nextauth] (Dynamic)
-  ├ ○ /auth/signin           (Static)
-  └ ○ /auth/verify           (Static)
-  ```
-- **TypeScript:** No type errors
-- **Build time:** ~3 seconds
+Open browser DevTools (F12) → Console tab to see:
+- Which email is being sent to NextAuth
+- Any errors from the sign-in process
+- Network requests to `/api/auth/signin/resend`
 
-## 5. Development Server Tests
+---
 
-### ✅ Dev Server Startup
-- **Status:** PASSED
-- **Details:**
-  - Server starts successfully on port 3000
-  - Hot Module Replacement (HMR) working
-  - Ready in 1.7 seconds
-  - Accessible at http://localhost:3000
+## 📧 Expected Email
 
-### ✅ Prisma Studio
-- **Status:** PASSED
-- **Details:**
-  - Prisma Studio launches successfully
-  - Available at http://localhost:5555
-  - Database browsing functional
+**From:** EY Meeting Tracker <onboarding@resend.dev>
+**Subject:** Sign in to [App Name]
+**Content:** Magic link button/URL
+**Delivery Time:** Within seconds (check spam if not in inbox)
 
-## 6. Environment Configuration
+---
 
-### ✅ Environment Variables
-- **Status:** CONFIGURED
-- **Variables Set:**
-  - `DATABASE_URL` - SQLite connection string
-  - `AUTH_SECRET` - NextAuth secret key
-  - `AUTH_TRUST_HOST` - Host trust enabled
-  - `AUTH_RESEND_KEY` - Resend API key (placeholder)
-  - `EMAIL_FROM` - Email sender address
+## 🔍 Troubleshooting
 
-## 7. Type Safety Tests
+If emails still don't arrive:
 
-### ✅ TypeScript Configuration
-- **Status:** PASSED
-- **Details:**
-  - Strict mode enabled
-  - Custom type declarations for NextAuth session
-  - Prisma types generated and working
-  - No compilation errors (`tsc --noEmit` passed)
+1. **Check Resend Dashboard:**
+   - https://resend.com/emails
+   - Look for recent emails
+   - Check delivery status
 
-## Known Issues & Warnings
+2. **Check Browser Console:**
+   - Any error messages?
+   - Is the correct email being logged?
 
-### ⚠️ Minor Warnings (Non-blocking)
-1. **Middleware Deprecation:** Next.js suggests using "proxy" instead of "middleware" (can be addressed later)
-2. **Theme Color:** Warning about themeColor in metadata (should be moved to viewport export)
-3. **Peer Dependencies:** Minor conflicts between nodemailer versions (doesn't affect functionality)
+3. **Check Network Tab:**
+   - Is the request to `/api/auth/signin/resend` successful?
+   - What's the response?
 
-## What Works
+4. **Verify Domain:**
+   - Resend may require domain verification for non-test addresses
+   - `onboarding@resend.dev` should work without verification
 
-✅ User sign-in flow (email magic link)  
-✅ @ey.com domain restriction  
-✅ Protected routes (middleware)  
-✅ Role-based sessions  
-✅ Database queries (Prisma)  
-✅ Server-side rendering  
-✅ Client-side forms  
-✅ TypeScript type checking  
-✅ Tailwind CSS styling  
-✅ Build process  
-✅ Hot reload  
+---
 
-## What's Not Yet Implemented
+## ⚙️ Environment Variables
 
-⏳ Meeting creation form  
-⏳ Meeting list/edit/delete  
-⏳ Dynamic dashboard stats  
-⏳ Admin customer management  
-⏳ Admin user management  
-⏳ Reports and CSV export  
-⏳ PWA configuration  
-⏳ Email sending (Resend integration needs API key)  
-
-## Next Steps
-
-1. ✅ **Phase 1 & 2 Complete** - Foundation and auth working
-2. 🚧 **Phase 3 In Progress** - Implement meeting CRUD operations
-3. ⏳ **Phase 4** - Admin interfaces
-4. ⏳ **Phase 5** - Reporting
-5. ⏳ **Phase 6** - PWA
-6. ⏳ **Phase 7-8** - Polish & documentation
-
-## Test Commands
-
-```bash
-# Run database test
-npm run test:db
-
-# Run TypeScript check
-npx tsc --noEmit
-
-# Run dev server
-npm run dev
-
-# Run build
-npm run build
-
-# Seed database
-npm run db:seed
-
-# Open Prisma Studio
-npx prisma studio
+**.env file:**
+```
+DATABASE_URL="file:./dev.db"
+AUTH_SECRET="8ZvK3mN9pQ2xR7tY6wC1sE4uH5jL8nM0oP3qD6fG9hJ2"
+AUTH_TRUST_HOST=true
+AUTH_RESEND_KEY="re_Pevt4ur1_2kqh97HPZ6WN81rAd62Sk4jj"
+EMAIL_FROM="EY Meeting Tracker <onboarding@resend.dev>"
 ```
 
-## Conclusion
-
-✅ **All critical functionality is working as expected.**  
-✅ **No blocking issues found.**  
-✅ **Ready to proceed with Phase 3 (Meeting Management).**
+**Note:** Server must be restarted after .env changes!

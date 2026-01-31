@@ -58,3 +58,8 @@ prisma/dev.db-journal
 *.sw?
 
 /src/generated/prisma
+
+# Local data files
+Users.csv
+middleware-bypass.ts
+middleware-original.ts

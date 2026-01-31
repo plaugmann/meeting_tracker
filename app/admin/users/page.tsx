@@ -7,6 +7,7 @@ interface User {
   id: string;
   email: string;
   name: string | null;
+  image: string | null;
   role: 'EMPLOYEE' | 'MANAGER' | 'ADMIN';
   target: number;
   _count?: {
@@ -136,70 +137,46 @@ export default function AdminUsersPage() {
           <div className="text-center py-12">
             <p className="text-gray-500">Loading users...</p>
           </div>
+        ) : users.length === 0 ? (
+          <div className="text-center py-12 bg-white rounded-lg shadow">
+            <p className="text-gray-500">No users found</p>
+          </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Target/Month
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Meetings
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.name || 'No name'}
-                      </div>
-                      <div className="text-sm text-gray-500">{user.email}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeColor(
-                          user.role
-                        )}`}
-                      >
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user.target}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {user._count?.meetings || 0}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        onClick={() => openEditModal(user)}
-                        className="text-blue-600 hover:text-blue-900"
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            {users.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-gray-500">No users found</p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+            {users.map((user) => (
+              <div
+                key={user.id}
+                className="bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-200 overflow-hidden cursor-pointer"
+                onClick={() => openEditModal(user)}
+              >
+                <div className="aspect-square relative overflow-hidden bg-gray-100">
+                  <img
+                    src={user.image || '/photos/default.jpg'}
+                    alt={user.name || 'User'}
+                    className="w-full h-full object-cover grayscale-image"
+                  />
+                  <div className="absolute top-2 right-2">
+                    <span
+                      className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(
+                        user.role
+                      )}`}
+                    >
+                      {user.role === 'ADMIN' ? 'Admin' : user.role === 'MANAGER' ? 'Mgr' : 'User'}
+                    </span>
+                  </div>
+                </div>
+                <div className="p-3">
+                  <h3 className="font-semibold text-sm text-gray-900 truncate">
+                    {user.name || 'No name'}
+                  </h3>
+                  <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                  <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
+                    <span>Target: {user.target}</span>
+                    <span>{user._count?.meetings || 0} meetings</span>
+                  </div>
+                </div>
               </div>
-            )}
+            ))}
           </div>
         )}
       </div>

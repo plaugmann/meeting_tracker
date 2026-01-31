@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import PWAInstallPrompt from '@/components/pwa-install-prompt';
 import PWARegister from '@/components/pwa-register';
+import ClientWrapper from '@/components/client-wrapper';
+import AuthSessionProvider from '@/components/session-provider';
 
 export const metadata: Metadata = {
   title: 'EY Meeting Tracker',
@@ -13,8 +15,8 @@ export const metadata: Metadata = {
     title: 'EY Meetings',
   },
   icons: {
-    icon: '/icon-192.svg',
-    apple: '/apple-touch-icon.png',
+    icon: '/web-app-manifest-192x192.png',
+    apple: '/apple-icon.png',
   },
 };
 
@@ -34,12 +36,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-icon.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/web-app-manifest-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/web-app-manifest-512x512.png" />
       </head>
-      <body className="antialiased">
-        <PWARegister />
-        {children}
-        <PWAInstallPrompt />
+      <body className="antialiased min-h-screen bg-cover bg-center bg-no-repeat bg-fixed" style={{ backgroundImage: 'url(/background.png)' }} suppressHydrationWarning>
+        <ClientWrapper>
+          <PWARegister />
+          <PWAInstallPrompt />
+        </ClientWrapper>
+        <AuthSessionProvider>
+          {children}
+        </AuthSessionProvider>
       </body>
     </html>
   );

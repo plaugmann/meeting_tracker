@@ -62,14 +62,18 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-gray-50">
       <Navbar
+        userName={session.user?.name}
         userEmail={session.user?.email}
+        userImage={session.user?.image}
         userRole={session.user?.role}
         showAdminLinks={true}
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold mb-2">Welcome back!</h2>
+          <h2 className="text-2xl font-bold mb-2">
+            Welcome back, {session.user?.name || session.user?.email}!
+          </h2>
           <p className="text-gray-600">Track your customer meetings and engagement.</p>
         </div>
 

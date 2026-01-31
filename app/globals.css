@@ -1,6 +1,9 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --color-ey-yellow: #ffe600;
+  --color-ey-dark: #2e2e38;
+}
 
 :root {
   --background: #ffffff;
@@ -23,5 +26,14 @@ body {
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+  
+  .grayscale-image {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease;
+  }
+  
+  .grayscale-image:hover {
+    filter: grayscale(0%);
   }
 }

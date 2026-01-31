@@ -1,39 +1,79 @@
 import NextAuth from 'next-auth';
-import { PrismaAdapter } from '@auth/prisma-adapter';
-import Resend from 'next-auth/providers/resend';
+import Credentials from 'next-auth/providers/credentials';
 import { prisma } from './lib/prisma';
+import bcrypt from 'bcryptjs';
+import { Role } from '@prisma/client';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  adapter: PrismaAdapter(prisma),
+  debug: process.env.NODE_ENV === 'development',
+  session: {
+    strategy: 'jwt',
+  },
   providers: [
-    Resend({
-      from: process.env.EMAIL_FROM || 'noreply@yourdomain.com',
+    Credentials({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email as string },
+        });
+
+        if (!user || !user.password) {
+          return null;
+        }
+
+        const isValidPassword = await bcrypt.compare(
+          credentials.password as string,
+          user.password
+        );
+
+        if (!isValidPassword) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          role: user.role,
+          target: user.target,
+        };
+      },
     }),
   ],
   callbacks: {
-    async signIn({ user }) {
-      const allowedDomains = ['@ey.com', '@dk.ey.com'];
-      const isAllowed = allowedDomains.some(domain => user.email?.endsWith(domain));
-      if (!isAllowed) {
-        return false;
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.name = user.name;
+        token.email = user.email;
+        token.image = user.image;
+        token.role = user.role;
+        token.target = user.target;
       }
-      return true;
+      return token;
     },
-    async session({ session, user }) {
+    async session({ session, token }) {
       if (session.user) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: { role: true, target: true },
-        });
-        session.user.id = user.id;
-        session.user.role = dbUser?.role || 'EMPLOYEE';
-        session.user.target = dbUser?.target || 8;
+        session.user.id = token.id as string;
+        session.user.name = (token.name as string | null) ?? null;
+        session.user.email = (token.email as string) ?? '';
+        session.user.image = (token.image as string | null) ?? null;
+        session.user.role = token.role as Role;
+        session.user.target = token.target as number;
       }
       return session;
     },
   },
   pages: {
     signIn: '/auth/signin',
-    verifyRequest: '/auth/verify',
   },
 });

@@ -3,18 +3,17 @@
 import { useEffect, useState } from 'react';
 
 export default function PWAInstallPrompt() {
-  const [isIOS, setIsIOS] = useState(false);
-  const [isStandalone, setIsStandalone] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
+    
     // Check if device is iOS
     const ios = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    setIsIOS(ios);
 
     // Check if app is already installed (standalone mode)
     const standalone = window.matchMedia('(display-mode: standalone)').matches;
-    setIsStandalone(standalone);
 
     // Show prompt only if on iOS, not standalone, and not dismissed before
     const dismissed = localStorage.getItem('pwa-prompt-dismissed');
@@ -29,7 +28,7 @@ export default function PWAInstallPrompt() {
     localStorage.setItem('pwa-prompt-dismissed', 'true');
   };
 
-  if (!showPrompt || !isIOS || isStandalone) {
+  if (!mounted || !showPrompt) {
     return null;
   }
 

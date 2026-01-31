@@ -2,11 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-
-interface Customer {
-  id: string;
-  name: string;
-}
+import CustomerSearchSelect from '@/components/customer-search-select';
 
 interface MeetingCustomer {
   customer: {
@@ -30,7 +26,6 @@ export default function EditMeetingPage() {
 
   const [loading, setLoading] = useState(false);
   const [loadingData, setLoadingData] = useState(true);
-  const [customers, setCustomers] = useState<Customer[]>([]);
   const [meeting, setMeeting] = useState<Meeting | null>(null);
 
   const [formData, setFormData] = useState({
@@ -48,17 +43,12 @@ export default function EditMeetingPage() {
 
   const fetchData = async () => {
     try {
-      const [meetingRes, customersRes] = await Promise.all([
-        fetch(`/api/meetings/${meetingId}`),
-        fetch('/api/customers'),
-      ]);
+      const meetingRes = await fetch(`/api/meetings/${meetingId}`);
 
-      if (meetingRes.ok && customersRes.ok) {
+      if (meetingRes.ok) {
         const meetingData = await meetingRes.json();
-        const customersData = await customersRes.json();
 
         setMeeting(meetingData);
-        setCustomers(customersData);
 
         setFormData({
           date: new Date(meetingData.date).toISOString().split('T')[0],
@@ -79,13 +69,8 @@ export default function EditMeetingPage() {
     }
   };
 
-  const handleCustomerToggle = (customerId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      customerIds: prev.customerIds.includes(customerId)
-        ? prev.customerIds.filter((id) => id !== customerId)
-        : [...prev.customerIds, customerId],
-    }));
+  const handleCustomersChange = (customerIds: string[]) => {
+    setFormData({ ...formData, customerIds });
     if (errors.customerIds) {
       setErrors((prev) => ({ ...prev, customerIds: '' }));
     }
@@ -183,35 +168,11 @@ export default function EditMeetingPage() {
           </div>
 
           {/* Customers Field */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Customers * (Select one or more)
-            </label>
-            <div className="border border-gray-300 rounded-lg p-4 max-h-64 overflow-y-auto">
-              {customers.map((customer) => (
-                <label
-                  key={customer.id}
-                  className="flex items-center py-2 hover:bg-gray-50 cursor-pointer rounded px-2"
-                >
-                  <input
-                    type="checkbox"
-                    checked={formData.customerIds.includes(customer.id)}
-                    onChange={() => handleCustomerToggle(customer.id)}
-                    className="h-5 w-5 text-blue-600 rounded focus:ring-blue-500 cursor-pointer"
-                  />
-                  <span className="ml-3 text-base">{customer.name}</span>
-                </label>
-              ))}
-            </div>
-            {formData.customerIds.length > 0 && (
-              <p className="mt-2 text-sm text-gray-600">
-                {formData.customerIds.length} customer(s) selected
-              </p>
-            )}
-            {errors.customerIds && (
-              <p className="mt-1 text-sm text-red-600">{errors.customerIds}</p>
-            )}
-          </div>
+          <CustomerSearchSelect
+            selectedCustomers={formData.customerIds}
+            onCustomersChange={handleCustomersChange}
+            error={errors.customerIds}
+          />
 
           {/* External Participants Field */}
           <div>

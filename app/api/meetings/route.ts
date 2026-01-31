@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { date, customerIds, externalParticipants, description } = body;
 
+    console.log('Received request body:', { date, customerIds, externalParticipants, description });
+
     // Validation
     if (!date || !customerIds || customerIds.length === 0 || !externalParticipants) {
       return NextResponse.json(
@@ -66,6 +68,46 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Verify all customer IDs exist
+    const existingCustomers = await prisma.customer.findMany({
+      where: {
+        id: {
+          in: customerIds,
+        },
+      },
+      select: { id: true },
+    });
+
+    if (existingCustomers.length !== customerIds.length) {
+      console.error('Customer validation failed:', {
+        requestedIds: customerIds,
+        foundIds: existingCustomers.map(c => c.id),
+      });
+      return NextResponse.json(
+        { error: 'One or more customer IDs are invalid' },
+        { status: 400 }
+      );
+    }
+
+    // Verify user exists
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+
+    if (!user) {
+      console.error('User not found in database:', session.user.id);
+      return NextResponse.json(
+        { error: 'User not found. Please sign in again.' },
+        { status: 400 }
+      );
+    }
+
+    console.log('Creating meeting with:', {
+      userId: session.user.id,
+      customerIds,
+      date: new Date(date),
+    });
 
     // Create meeting with customer relationships
     const meeting = await prisma.meeting.create({

@@ -13,10 +13,12 @@ model User {
   email         String    @unique
   emailVerified DateTime?
   image         String?
+  password      String?
   role          Role      @default(EMPLOYEE)
   target        Int       @default(8)
   meetings      Meeting[]
   accounts      Account[]
+  sessions      Session[]
   createdAt     DateTime  @default(now())
 }
 
@@ -36,6 +38,16 @@ model Account {
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([userId])
 }
 

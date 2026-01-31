@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { Role } from '@prisma/client';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  debug: process.env.NODE_ENV === 'development',
+  debug: true, // Enable debug logging
   session: {
     strategy: 'jwt',
   },
@@ -17,7 +17,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        console.log('[AUTH] Authorize attempt:', { email: credentials?.email });
+        
         if (!credentials?.email || !credentials?.password) {
+          console.log('[AUTH] Missing credentials');
           return null;
         }
 
@@ -25,7 +28,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: credentials.email as string },
         });
 
+        console.log('[AUTH] User found:', !!user);
+        
         if (!user || !user.password) {
+          console.log('[AUTH] User not found or no password');
           return null;
         }
 
@@ -34,10 +40,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           user.password
         );
 
+        console.log('[AUTH] Password valid:', isValidPassword);
+
         if (!isValidPassword) {
           return null;
         }
 
+        console.log('[AUTH] Login successful');
         return {
           id: user.id,
           email: user.email,

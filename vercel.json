@@ -1,0 +1,10 @@
+{
+  "buildCommand": "prisma generate && next build",
+  "env": {
+    "DATABASE_URL": "@database_url",
+    "AUTH_SECRET": "@auth_secret",
+    "AUTH_TRUST_HOST": "true",
+    "AUTH_RESEND_KEY": "@auth_resend_key",
+    "EMAIL_FROM": "EY Meeting Tracker <onboarding@resend.dev>"
+  }
+}

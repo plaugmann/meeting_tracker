@@ -63,3 +63,5 @@ prisma/dev.db-journal
 Users.csv
 middleware-bypass.ts
 middleware-original.ts
+.vercel
+.env*.local

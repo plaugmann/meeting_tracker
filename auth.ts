@@ -8,6 +8,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   debug: true, // Enable debug logging
   session: {
     strategy: 'jwt',
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   providers: [
     Credentials({

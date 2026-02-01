@@ -165,6 +165,7 @@ export default function EditMeetingPage() {
                 errors.date ? 'border-red-500' : 'border-gray-300'
               }`}
             />
+            <p className="mt-1 text-xs text-gray-500">Only past meetings can be recorded (today or earlier)</p>
             {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
           </div>
 

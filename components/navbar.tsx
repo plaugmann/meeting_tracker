@@ -1,4 +1,7 @@
+'use client';
+
 import { signOut } from '@/auth';
+import { useState } from 'react';
 
 interface NavbarProps {
   userName?: string | null;
@@ -9,6 +12,8 @@ interface NavbarProps {
 }
 
 export default function Navbar({ userName, userEmail, userImage, userRole, showAdminLinks }: NavbarProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -48,6 +53,7 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
             )}
           </div>
           <div className="flex items-center gap-4">
+            {/* Desktop Menu */}
             <div className="hidden sm:flex items-center gap-3">
               {userImage && (
                 <img
@@ -76,6 +82,7 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
                 'use server';
                 await signOut();
               }}
+              className="hidden sm:block"
             >
               <button
                 type="submit"
@@ -84,8 +91,101 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
                 Sign out
               </button>
             </form>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="sm:hidden p-2 text-gray-600 hover:text-gray-900"
+              aria-label="Toggle menu"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown Menu */}
+        {mobileMenuOpen && (
+          <div className="sm:hidden border-t border-gray-200 py-4">
+            <div className="flex flex-col space-y-3">
+              {/* User Info */}
+              <div className="flex items-center gap-3 px-4 pb-3 border-b border-gray-200">
+                {userImage && (
+                  <img
+                    src={userImage}
+                    alt={userName || 'User'}
+                    className="w-10 h-10 rounded-full grayscale-image object-cover"
+                  />
+                )}
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-gray-900">{userName || userEmail}</span>
+                  <span className="text-xs text-gray-500">{userRole}</span>
+                </div>
+              </div>
+
+              {/* Admin Links */}
+              {showAdminLinks && userRole === 'ADMIN' && (
+                <>
+                  <a
+                    href="/admin/customers"
+                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Customers
+                  </a>
+                  <a
+                    href="/admin/users"
+                    className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Users
+                  </a>
+                </>
+              )}
+
+              {/* Reports Link */}
+              {showAdminLinks && (userRole === 'ADMIN' || userRole === 'MANAGER') && (
+                <a
+                  href="/reports"
+                  className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  Reports
+                </a>
+              )}
+
+              {/* Settings Link */}
+              <a
+                href="/settings"
+                className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Settings
+              </a>
+
+              {/* Sign Out */}
+              <form
+                action={async () => {
+                  'use server';
+                  await signOut();
+                }}
+                className="px-4 pt-3 border-t border-gray-200"
+              >
+                <button
+                  type="submit"
+                  className="w-full text-left py-2 text-sm text-red-600 hover:text-red-700"
+                >
+                  Sign out
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );

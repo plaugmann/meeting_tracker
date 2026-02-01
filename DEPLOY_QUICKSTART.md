@@ -66,14 +66,44 @@ Go to: https://vercel.com/new
 
 **On YOUR laptop, in PowerShell:**
 
+#### Option A: Manual Setup (Works on Corporate Networks)
+
 ```powershell
 # Navigate to project
 cd "C:\Users\Soeren.Plaugmann\OneDrive - EY\Documents\GitHub\meeting_tracker"
 
+# Create .env.production file manually
+# Copy your DATABASE_URL from Vercel dashboard
+@"
+DATABASE_URL="your-neon-connection-string-from-vercel"
+"@ | Out-File -FilePath .env.production -Encoding utf8
+
+# Create database schema
+npx dotenv -e .env.production -- prisma db push
+
+# Import 162 customers
+npx dotenv -e .env.production -- tsx scripts/reset-and-import-customers.ts
+```
+
+**To get DATABASE_URL:**
+1. Go to https://vercel.com/dashboard
+2. Click your project
+3. Go to **Settings** → **Environment Variables**
+4. Find `DATABASE_URL` and click **"Show"**
+5. Copy the value
+
+#### Option B: Using Vercel CLI (If SSL Works)
+
+```powershell
+# If you get SSL certificate errors on corporate network, use Option A instead
+
 # Install Vercel CLI (one-time)
 npm install -g vercel
 
-# Login to Vercel (one-time)
+# For corporate networks with SSL inspection:
+$env:NODE_TLS_REJECT_UNAUTHORIZED="0"
+
+# Login to Vercel
 vercel login
 
 # Pull your production DATABASE_URL
@@ -163,6 +193,23 @@ vercel env pull .env.production
 ---
 
 ## 🆘 Troubleshooting
+
+### "SSL certificate error" with Vercel CLI
+
+**This happens on corporate networks (like EY) with SSL inspection.**
+
+**Solution:** Use **Option A (Manual Setup)** in Step 4 instead of Vercel CLI.
+
+Or, temporarily disable SSL verification:
+```powershell
+$env:NODE_TLS_REJECT_UNAUTHORIZED="0"
+vercel login
+```
+
+⚠️ **Security Note:** Only use this on trusted networks. Reset after:
+```powershell
+Remove-Item Env:\NODE_TLS_REJECT_UNAUTHORIZED
+```
 
 ### "Command not found: vercel"
 ```powershell

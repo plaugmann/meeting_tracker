@@ -159,6 +159,7 @@ export default function EditMeetingPage() {
               type="date"
               id="date"
               value={formData.date}
+              max={new Date().toISOString().split('T')[0]}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base ${
                 errors.date ? 'border-red-500' : 'border-gray-300'

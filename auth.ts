@@ -25,8 +25,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
+        // Convert email to lowercase for case-insensitive lookup
+        const emailLower = (credentials.email as string).toLowerCase();
+
+        const user = await prisma.user.findFirst({
+          where: { 
+            email: {
+              equals: emailLower,
+              mode: 'insensitive'
+            }
+          },
         });
 
         console.log('[AUTH] User found:', !!user);

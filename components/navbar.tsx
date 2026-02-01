@@ -1,7 +1,7 @@
 'use client';
 
-import { signOut } from '@/auth';
 import { useState } from 'react';
+import { handleSignOut } from '@/app/actions/auth';
 
 interface NavbarProps {
   userName?: string | null;
@@ -77,13 +77,7 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </a>
-            <form
-              action={async () => {
-                'use server';
-                await signOut();
-              }}
-              className="hidden sm:block"
-            >
+            <form action={handleSignOut} className="hidden sm:block">
               <button
                 type="submit"
                 className="text-sm text-gray-600 hover:text-gray-900"
@@ -169,13 +163,7 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
               </a>
 
               {/* Sign Out */}
-              <form
-                action={async () => {
-                  'use server';
-                  await signOut();
-                }}
-                className="px-4 pt-3 border-t border-gray-200"
-              >
+              <form action={handleSignOut} className="px-4 pt-3 border-t border-gray-200">
                 <button
                   type="submit"
                   className="w-full text-left py-2 text-sm text-red-600 hover:text-red-700"

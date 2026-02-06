@@ -99,14 +99,13 @@ export default function NewMeetingPage() {
               type="date"
               id="date"
               value={formData.date}
-              max={new Date().toISOString().split('T')[0]}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
               className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-base ${
                 errors.date ? 'border-red-500' : 'border-gray-300'
               }`}
               style={{ colorScheme: 'light' }}
             />
-            <p className="mt-1 text-xs text-gray-500">Select meeting date (today or earlier - future dates are disabled)</p>
+            <p className="mt-1 text-xs text-gray-500">Select meeting date</p>
             {errors.date && <p className="mt-1 text-sm text-red-600">{errors.date}</p>}
           </div>
 

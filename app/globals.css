@@ -38,7 +38,7 @@ body {
   }
 }
 
-/* Date picker styling - gray out future dates */
+/* Date picker styling */
 input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
@@ -47,7 +47,6 @@ input[type="date"]:invalid {
   color: #9ca3af;
 }
 
-/* Additional styling for date inputs to show disabled state for future dates */
 input[type="date"] {
   color-scheme: light;
 }

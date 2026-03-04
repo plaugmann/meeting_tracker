@@ -14,6 +14,9 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "import:customers": "tsx scripts/reset-and-import-customers.ts",
+    "import:users-se": "dotenv -e .env.production.se -- tsx scripts/import-users-se.ts",
+    "import:customers-se": "dotenv -e .env.production.se -- tsx scripts/import-customers-se.ts",
+    "db:push:se": "dotenv -e .env.production.se -- prisma db push",
     "test:db": "tsx scripts/test-db.ts"
   },
   "dependencies": {

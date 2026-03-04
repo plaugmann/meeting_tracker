@@ -26,6 +26,13 @@ export default function Navbar({ userName, userEmail, userImage, userRole, showA
                 className="h-8 w-8 sm:h-10 sm:w-10 object-contain"
               />
               <span className="text-lg sm:text-xl font-bold text-gray-900">EY Meeting Tracker</span>
+              {process.env.NEXT_PUBLIC_COUNTRY_CODE === 'SE' && (
+                <svg width="24" height="16" viewBox="0 0 16 10" className="ml-1 inline-block rounded-sm shadow-sm" aria-label="Sweden">
+                  <rect width="16" height="10" fill="#006AA7" />
+                  <rect x="5" width="2" height="10" fill="#FECC00" />
+                  <rect y="4" width="16" height="2" fill="#FECC00" />
+                </svg>
+              )}
             </a>
             {showAdminLinks && userRole === 'ADMIN' && (
               <div className="hidden md:flex gap-4">

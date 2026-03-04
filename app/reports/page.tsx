@@ -104,10 +104,11 @@ export default function ReportsPage() {
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = async (exportType?: string) => {
     try {
+      const type = exportType || activeTab;
       const params = new URLSearchParams({
-        type: activeTab,
+        type,
         ...(filters.startDate && { startDate: filters.startDate }),
         ...(filters.endDate && { endDate: filters.endDate }),
         ...(filters.userId && { userId: filters.userId }),
@@ -121,7 +122,7 @@ export default function ReportsPage() {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `meetings-report-${activeTab}-${Date.now()}.csv`;
+        a.download = `meetings-report-${type}-${Date.now()}.csv`;
         document.body.appendChild(a);
         a.click();
         a.remove();
@@ -266,14 +267,21 @@ export default function ReportsPage() {
           </div>
         </div>
 
-        {/* Export Button */}
-        <div className="mb-6 flex justify-end">
+        {/* Export Buttons */}
+        <div className="mb-6 flex justify-end gap-3">
           <button
-            onClick={handleExport}
+            onClick={() => handleExport('meetings')}
+            disabled={loading}
+            className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            Export Meetings to Excel
+          </button>
+          <button
+            onClick={() => handleExport()}
             disabled={loading}
             className="px-4 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 disabled:opacity-50"
           >
-            Export to CSV
+            Export Summary to CSV
           </button>
         </div>
 
@@ -301,8 +309,12 @@ export default function ReportsPage() {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {reportData.byUser.map((row) => (
-                    <tr key={row.userId}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <tr
+                      key={row.userId}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => router.push(`/admin/users/${row.userId}/meetings`)}
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 hover:text-blue-800 font-medium">
                         {row.userName || 'No name'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

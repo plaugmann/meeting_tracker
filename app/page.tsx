@@ -170,31 +170,36 @@ export default async function Home() {
               {weekLeaderboard.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center py-4">No meetings this week yet</p>
               ) : (
-                weekLeaderboard.map((user, index) => (
-                  <div key={user.userId} className="flex items-center gap-4">
-                    <div className={`flex-shrink-0 text-2xl font-bold ${
-                      index === 0 ? 'text-yellow-500' : 
-                      index === 1 ? 'text-gray-400' : 
-                      'text-amber-700'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <img
-                      src={user.image || '/photos/default.jpg'}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full object-cover grayscale-image"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {user.count} {user.count === 1 ? 'meeting' : 'meetings'}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                weekLeaderboard.map((user, index) => {
+                  const isAdmin = session.user?.role === 'ADMIN';
+                  const Wrapper = isAdmin ? 'a' : 'div';
+                  const wrapperProps = isAdmin ? { href: `/admin/users/${user.userId}/meetings` } : {};
+                  return (
+                    <Wrapper key={user.userId} {...wrapperProps} className={`flex items-center gap-4 ${isAdmin ? 'hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors' : ''}`}>
+                      <div className={`flex-shrink-0 text-2xl font-bold ${
+                        index === 0 ? 'text-yellow-500' : 
+                        index === 1 ? 'text-gray-400' : 
+                        'text-amber-700'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <img
+                        src={user.image || '/photos/default.jpg'}
+                        alt={user.name}
+                        className="w-12 h-12 rounded-full object-cover grayscale-image"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                          {user.count} {user.count === 1 ? 'meeting' : 'meetings'}
+                        </span>
+                      </div>
+                    </Wrapper>
+                  );
+                })
               )}
             </div>
           </div>
@@ -211,31 +216,36 @@ export default async function Home() {
               {monthLeaderboard.length === 0 ? (
                 <p className="text-sm text-gray-500 text-center py-4">No meetings this month yet</p>
               ) : (
-                monthLeaderboard.map((user, index) => (
-                  <div key={user.userId} className="flex items-center gap-4">
-                    <div className={`flex-shrink-0 text-2xl font-bold ${
-                      index === 0 ? 'text-yellow-500' : 
-                      index === 1 ? 'text-gray-400' : 
-                      'text-amber-700'
-                    }`}>
-                      {index + 1}
-                    </div>
-                    <img
-                      src={user.image || '/photos/default.jpg'}
-                      alt={user.name}
-                      className="w-12 h-12 rounded-full object-cover grayscale-image"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
-                    </div>
-                    <div className="flex-shrink-0">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {user.count} {user.count === 1 ? 'meeting' : 'meetings'}
-                      </span>
-                    </div>
-                  </div>
-                ))
+                monthLeaderboard.map((user, index) => {
+                  const isAdmin = session.user?.role === 'ADMIN';
+                  const Wrapper = isAdmin ? 'a' : 'div';
+                  const wrapperProps = isAdmin ? { href: `/admin/users/${user.userId}/meetings` } : {};
+                  return (
+                    <Wrapper key={user.userId} {...wrapperProps} className={`flex items-center gap-4 ${isAdmin ? 'hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors' : ''}`}>
+                      <div className={`flex-shrink-0 text-2xl font-bold ${
+                        index === 0 ? 'text-yellow-500' : 
+                        index === 1 ? 'text-gray-400' : 
+                        'text-amber-700'
+                      }`}>
+                        {index + 1}
+                      </div>
+                      <img
+                        src={user.image || '/photos/default.jpg'}
+                        alt={user.name}
+                        className="w-12 h-12 rounded-full object-cover grayscale-image"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                      </div>
+                      <div className="flex-shrink-0">
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                          {user.count} {user.count === 1 ? 'meeting' : 'meetings'}
+                        </span>
+                      </div>
+                    </Wrapper>
+                  );
+                })
               )}
             </div>
           </div>

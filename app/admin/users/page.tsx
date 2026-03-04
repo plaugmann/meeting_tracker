@@ -172,7 +172,13 @@ export default function AdminUsersPage() {
                   <p className="text-xs text-gray-500 truncate">{user.email}</p>
                   <div className="mt-2 flex items-center justify-between text-xs text-gray-600">
                     <span>Target: {user.target}</span>
-                    <span>{user._count?.meetings || 0} meetings</span>
+                    <a
+                      href={`/admin/users/${user.id}/meetings`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      {user._count?.meetings || 0} meetings
+                    </a>
                   </div>
                 </div>
               </div>

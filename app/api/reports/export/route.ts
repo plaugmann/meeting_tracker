@@ -45,6 +45,39 @@ export async function GET(request: NextRequest) {
     }
 
     let csv = '';
+    const BOM = '\uFEFF';
+
+    if (type === 'meetings') {
+      const meetings = await prisma.meeting.findMany({
+        where,
+        include: {
+          user: {
+            select: { name: true, email: true },
+          },
+          customers: {
+            include: {
+              customer: { select: { name: true } },
+            },
+          },
+        },
+        orderBy: { date: 'desc' },
+      });
+
+      csv = BOM + 'Date,User,Email,Customers,External Participants,Description\n';
+      meetings.forEach((m) => {
+        const date = new Date(m.date).toISOString().split('T')[0];
+        const customers = m.customers.map((c) => c.customer.name).join('; ');
+        const escapeCsv = (s: string) => `"${(s || '').replace(/"/g, '""')}"`;
+        csv += `${date},${escapeCsv(m.user.name || '')},${escapeCsv(m.user.email)},${escapeCsv(customers)},${escapeCsv(m.externalParticipants)},${escapeCsv(m.description)}\n`;
+      });
+
+      return new NextResponse(csv, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="meetings-export-${Date.now()}.csv"`,
+        },
+      });
+    }
 
     if (type === 'user') {
       // Group by user
@@ -76,7 +109,7 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      csv = 'User Name,Email,Meeting Count\n';
+      csv = BOM + 'User Name,Email,Meeting Count\n';
       Array.from(userMap.values())
         .sort((a, b) => b.count - a.count)
         .forEach((data) => {
@@ -113,7 +146,7 @@ export async function GET(request: NextRequest) {
         }
       });
 
-      csv = 'Customer Name,Meeting Count\n';
+      csv = BOM + 'Customer Name,Meeting Count\n';
       Array.from(customerMap.values())
         .sort((a, b) => b.count - a.count)
         .forEach((data) => {
@@ -137,7 +170,7 @@ export async function GET(request: NextRequest) {
         periodMap.set(period, (periodMap.get(period) || 0) + 1);
       });
 
-      csv = 'Period (Year-Month),Meeting Count\n';
+      csv = BOM + 'Period (Year-Month),Meeting Count\n';
       Array.from(periodMap.entries())
         .sort((a, b) => a[0].localeCompare(b[0]))
         .forEach(([period, count]) => {
